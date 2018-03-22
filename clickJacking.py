@@ -1,6 +1,7 @@
 import optparse
 import requests
 import sys
+import webbrowser
 
 def main():
     parser = optparse.OptionParser(usage="python3 %prog -u <url> -c <cookies>")
@@ -45,7 +46,7 @@ def checkUrl(url):
 
 
 def clickJPoc(url, cookies=""):
-
+    Newurl = "http://" + url
     iframe = """
     <html>
         <head><title>Clickjack test page</title></head>
@@ -54,10 +55,32 @@ def clickJPoc(url, cookies=""):
             <iframe src="{}" width="500" height="500"></iframe>
         </body>
     </html>
-     """.format(url)
-    print(iframe)
+     """.format(Newurl)
+    print("[+] Writing PoC !")
+    writePoC(iframe)
 
+def writePoC(iframe):
 
+    try:
+        f = open("/tmp/iframe.html", 'w')
+        f.write(iframe)
+        f.close()
+        print("[+] File write with sucess.. you can now use in your browser")
+    except Exception as e:
+        print("[+] Something went wrong while writing file")
+        print(e)
 
+    ans = input("Do u want to open PoC in your browser y/n ? ".lower())
+    if ans == "y":
+        try:
+            url = "file:///tmp/iframe.html"
+            webbrowser.open(url)
+        except Exception as e:
+            print("[-] Error try install webbrowser lib !")
+            print(e)  
+    else:
+         print("[+] Go to your Desktop and get the iframe.html!")
+
+    
 
 main()
